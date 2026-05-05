@@ -1,13 +1,8 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+from app.api.v1.api_v1 import api_router as api_v1_router
 
+app = FastAPI(title="Sempiterno API")
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str | None = None):
-    return {"item_id": item_id, "q": q}
+# Unimos la versión 1 a la aplicación principal
+app.include_router(api_v1_router, prefix="/api/v1")
