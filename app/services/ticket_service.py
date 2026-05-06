@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from app.models.ticket import Ticket
 from app.schemas.ticket import TicketCreate
 from fastapi import HTTPException
@@ -40,6 +42,12 @@ def obtener_ticket_por_id(db: Session, ticket_id: int):
         # Aquí lanzamos el error 404 directamente
         raise HTTPException(status_code=404, detail="El ticket no existe")
     return ticket
+
+
+def obtener_tikets_por_fecha(db: Session, init_date: datetime, last_date: datetime):
+    sentencia = select(Ticket).where(Ticket.fecha.between(fecha_inicio, fecha_fin))
+    resultados = db.exec(sentencia).all()
+    return resultados
 
 
 # 4. FUNCIÓN PARA ELIMINAR

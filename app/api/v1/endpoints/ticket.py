@@ -1,27 +1,39 @@
+from datetime import datetime
 from typing import List
 
-from app.schemas.tikets import ProductoItem, Ticket
-from fastapi import APIRouter
+from app.db import database
+from app.schemas import ticket
+from app.services import ticket_service
+from fastapi import APIRouter, Depends
+from sqlModel import Session
 
-router = APIRouter()
-
-
-@router.get("/", response_model=List[Ticket])
-def read_tikets():
-    return [
-        Ticket(
-            id=57,
-            customerName="Miguel Angel",
-            products=[
-                ProductoItem(nombre="Vela 1", cantidad=3, precio_unidad=129.0),
-                ProductoItem(nombre="Vela 2", cantidad=5, precio_unidad=130.0),
-            ],
-            total=1037.0,
-            iva=0.12,
-        )
-    ]
+router = APIRouter(prefix="/tickets", tags=["tickets"])
 
 
-@router.get("/{tiket_id}")
-async def read_tiket(item_id):
-    return {"item_id": item_id}
+@router.get("/", response_model=List[ticket.TicketRead])
+def read_tickets(db: Session = Depends(database.get_session)):
+    return ticket_service.obtener_todos_los_tickets(db)
+
+
+@router.get("/{ticket_id}", response_model=ticket.TicketRead)
+async def obtener_ticket(ticket_id: int, db: Session = Depends(database.get_session)):
+    return ticket_service.obtener_ticket_por_id(db, ticket_id)
+
+
+@router.get("/reporte/fechas", reponse_model=List[ticket.ReporteMensual])
+async def reporte_mensual(
+    inicio: datetime, fin: datetime, db: Session = Depends(database.get_session)
+):
+    return ticket_service.obtener_tikets_por_fecha(db, inicio, fin)
+
+
+@router.post("/", response_model=ticket.TicketRead)
+async def crear_ticket(
+    ticket_in: ticket.TicketCreate, db: Session = Depends(database.get_session)
+):
+    return ticket_service.crear_ticket(db, ticket_in)
+
+
+@router.delete("/{ticket_id}")
+async def delete_ticket(ticket_id: int, db: Session = Depends(database.get_session)):
+    return ticket_service.eliminar_ticket(db, ticket_id)
