@@ -5,7 +5,7 @@ from app.db import database
 from app.schemas import ticket
 from app.services import ticket_service
 from fastapi import APIRouter, Depends
-from sqlModel import Session
+from sqlmodel import Session
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
 
@@ -20,7 +20,7 @@ async def obtener_ticket(ticket_id: int, db: Session = Depends(database.get_sess
     return ticket_service.obtener_ticket_por_id(db, ticket_id)
 
 
-@router.get("/reporte/fechas", reponse_model=List[ticket.ReporteMensual])
+@router.get("/reporte/fechas", response_model=List[ticket.ReporteMensual])
 async def reporte_mensual(
     inicio: datetime, fin: datetime, db: Session = Depends(database.get_session)
 ):

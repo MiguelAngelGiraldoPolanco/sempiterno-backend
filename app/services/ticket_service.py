@@ -13,8 +13,9 @@ def crear_ticket(db: Session, ticket_data: TicketCreate) -> Ticket:
     """
     # Convertimos el Schema en Modelo (SQLModel)
     # .model_validate es como decir "copia estos datos al molde de la base de datos"
-    nuevo_ticket = Ticket.model_validate(ticket_data)
-
+    ticket_dt = ticket_data.model_dump()
+    # Esta convirtiendo un objeto auna lista para que se pueda guardar en la base de datos SQLlite
+    nuevo_ticket = Ticket(**ticket_dt)
     db.add(nuevo_ticket)
     db.commit()
     db.refresh(nuevo_ticket)  # Para que nos devuelva el ID que generó la DB
@@ -46,7 +47,7 @@ def obtener_ticket_por_id(db: Session, ticket_id: int):
 
 # Funcion para obtener los tikets pero por la fecha para los reportes mensuales
 def obtener_tikets_por_fecha(db: Session, init_date: datetime, last_date: datetime):
-    sentencia = select(Ticket).where(Ticket.fecha.between(init_date, last_date))
+    sentencia = select(Ticket).where(Ticket.date.between(init_date, last_date))
     resultados = db.exec(sentencia).all()
     return resultados
 

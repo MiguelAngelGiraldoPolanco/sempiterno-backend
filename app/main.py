@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from sqlmodel import SQLModel
 
 from app.api.v1.api_v1 import api_router as api_v1_router
-from app.db import engine  # Asegúrate de importar TU motor
+from app.db.database import engine
 
 
 # Esta función se ejecuta al arrancar la app
