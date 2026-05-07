@@ -7,7 +7,7 @@ from app.services import ticket_service
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
-router = APIRouter(prefix="/tickets", tags=["tickets"])
+router = APIRouter()
 
 
 @router.get("/", response_model=List[ticket.TicketRead])

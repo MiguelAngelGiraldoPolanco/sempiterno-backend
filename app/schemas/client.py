@@ -12,7 +12,7 @@ class ClientCreate(ClientBase):
     pass
 
 
-class TicketRead(ClientBase):
+class ClientRead(ClientBase):
     id: int
     date: datetime
 
