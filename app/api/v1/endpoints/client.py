@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends
 from pydantic import EmailStr
 from sqlmodel import Session
 
-router = APIRouter()
+router = APIRouter(prefix="clients", tags=["Clients"])
 
 
 @router.get("/", response_model=List[client.ClientRead])
