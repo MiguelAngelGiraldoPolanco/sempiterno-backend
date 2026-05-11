@@ -1,67 +1,85 @@
 from datetime import datetime, timezone
+from typing import Sequence
 
 from app.models.ticket import Ticket
 from app.schemas.ticket import TicketCreate
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlmodel import Session, select
 
 
-# 1. FUNCIÓN PARA CREAR
-def crear_ticket(db: Session, ticket_data: TicketCreate) -> Ticket:
-    """
-    Recibe el esquema de validación y lo transforma en un modelo de DB para guardarlo.
-    """
-    # Convertimos el Schema en Modelo (SQLModel)
-    # .model_validate es como decir "copia estos datos al molde de la base de datos"
+def crear_ticket(
+    db: Session,
+    ticket_data: TicketCreate,
+) -> Ticket:
+
     ticket_dt = ticket_data.model_dump()
-    # Esta convirtiendo un objeto auna lista para que se pueda guardar en la base de datos SQLlite
+
     nuevo_ticket = Ticket(**ticket_dt)
     db.add(nuevo_ticket)
-    db.commit()
-    db.refresh(nuevo_ticket)  # Para que nos devuelva el ID que generó la DB
-    return nuevo_ticket
+    try:
+        db.commit()
+        db.refresh(nuevo_ticket)
+        return nuevo_ticket
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error de integridad, intente de nuevo",
+        )
 
 
-# 2. FUNCIÓN PARA OBTENER TODOS (LECTURA)
-def obtener_todos_los_tickets(db: Session):
-    """
-    Trae una lista de todos los tickets en la base de datos.
-    """
-    # Esto es como el "SELECT * FROM ticket"
-    sentencia = select(Ticket)
-    resultados = db.exec(sentencia).all()
-    return resultados
+def obtener_todos_los_tickets(
+    db: Session,
+) -> Sequence[Ticket]:
+
+    return db.exec(select(Ticket)).all()
 
 
-# 3. FUNCIÓN PARA OBTENER UNO SOLO (DETALLE)
-def obtener_ticket_por_id(db: Session, ticket_id: int):
-    """
-    Busca un ticket específico. Si no existe, lanza un error.
-    """
+def obtener_ticket_por_id(
+    db: Session,
+    ticket_id: int,
+) -> Ticket | None:
+
     ticket = db.get(Ticket, ticket_id)
     if not ticket:
         # Aquí lanzamos el error 404 directamente
-        raise HTTPException(status_code=404, detail="El ticket no existe")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="El ticket no existe",
+        )
     return ticket
 
 
-# Funcion para obtener los tikets pero por la fecha para los reportes mensuales
-def obtener_tikets_por_fecha(db: Session, init_date: datetime, last_date: datetime):
+def obtener_tickets_por_fecha(
+    db: Session,
+    init_date: datetime,
+    last_date: datetime,
+) -> Sequence[Ticket]:
+
+    if init_date > last_date:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La fecha de inicio no puede ser posterior a la fecha de fin",
+        )
+
     sentencia = select(Ticket).where(
         Ticket.date.between(asegurar_utc(init_date), asegurar_utc(last_date))
     )
-    resultados = db.exec(sentencia).all()
-    return resultados
+
+    return db.exec(sentencia).all()
 
 
-# 4. FUNCIÓN PARA ELIMINAR
-def eliminar_ticket(db: Session, ticket_id: int):
-    """
-    Busca y borra un ticket.
-    """
-    ticket_db = obtener_ticket_por_id(
-        db, ticket_id
-    )  # Reutilizamos la función de arriba
+def eliminar_ticket(
+    db: Session,
+    ticket_id: int,
+) -> dict:
+
+    ticket_db = db.get(Ticket, ticket_id)
+    if not ticket_db:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Ticket no encontrado",
+        )
     db.delete(ticket_db)
     db.commit()
     return {"ok": True, "message": "Ticket eliminado"}

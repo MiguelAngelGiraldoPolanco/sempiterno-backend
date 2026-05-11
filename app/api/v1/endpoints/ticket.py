@@ -24,7 +24,7 @@ async def obtener_ticket(ticket_id: int, db: Session = Depends(database.get_sess
 async def reporte_mensual(
     inicio: datetime, fin: datetime, db: Session = Depends(database.get_session)
 ):
-    return ticket_service.obtener_tikets_por_fecha(db, inicio, fin)
+    return ticket_service.obtener_tickets_por_fecha(db, inicio, fin)
 
 
 @router.post("/", response_model=ticket.TicketRead)

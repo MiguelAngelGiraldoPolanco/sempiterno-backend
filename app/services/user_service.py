@@ -37,7 +37,13 @@ def obtener_usuario_por_id(
     db: Session,
     user_id: int,
 ) -> User | None:
-    return db.get(User, user_id)
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="El usuario no existe",
+        )
+    return user
 
 
 def obtener_usuario_por_email(
