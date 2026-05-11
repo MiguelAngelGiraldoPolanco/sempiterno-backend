@@ -33,10 +33,7 @@ def obtener_usuario_por_id(db: Session, user_id: int) -> Optional[User]:
 
 def obtener_usuario_por_email(db: Session, user_email: EmailStr) -> Optional[User]:
     sentencia = select(User).where(User.email == user_email)
-    resultados = db.exec(sentencia).first()
-    if not resultados:
-        raise HTTPException(status_code=404, detail="EL usuario no existe.")
-    return resultados
+    return db.exec(sentencia).first()
 
 
 def modificar_usuario(db: Session, user_data: User) -> User:
@@ -55,7 +52,7 @@ def modificar_usuario(db: Session, user_data: User) -> User:
 
 
 def eliminar_usuario(db: Session, user_id: int) -> dict:
-    user_db = obtener_usuario_por_id(db, user_id)
+    user_db = db.get(User, User.id)
     if not user_db:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     db.delete(user_db)

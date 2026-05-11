@@ -1,7 +1,7 @@
 from app.db import database
 from app.schemas import user
 from app.services import user_service
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantiuc import EmialStr
 from sqlmodel import Session
 
@@ -19,7 +19,10 @@ async def obtener_usuario_por_id(
 async def obtener_usuario_por_emial(
     email_user: EmialStr, db: Session = Depends(database.get_session)
 ):
-    return user_service.obtener_usuario_por_email(db, email_user)
+    user = user_service.obtener_usuario_por_email(db, email_user)
+    if not user:
+        raise HTTPException(sstatus_code=404, detail="Usuario no encontrado")
+    return
 
 
 @router.post("/", response_model=user.UserRead)
