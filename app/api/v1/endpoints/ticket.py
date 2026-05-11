@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[ticket.TicketRead])
-def read_tickets(db: Session = Depends(database.get_session)):
+async def read_tickets(db: Session = Depends(database.get_session)):
     return ticket_service.obtener_todos_los_tickets(db)
 
 

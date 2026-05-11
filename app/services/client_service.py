@@ -37,7 +37,7 @@ def obtener_clients_por_email(db: Session, email: EmailStr):
     sentencia = select(Client).where(Client.email == email)
     resultados = db.exec(sentencia).first()
     if not resultados:
-        raise HTTPException(status_code=404, detail="El cliente no existe")
+        raise HTTPException(status_code=404, detail="El cliente no existe.")
     return resultados
 
 
