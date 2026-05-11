@@ -1,15 +1,21 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
     email: EmailStr
-    is_admin: bool
 
 
 class UserCreate(UserBase):
     password_hash: str
+    is_admin: bool = False
+
+
+class UserUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    password_hash: Optional[str] = None
 
 
 class UserRead(UserBase):
