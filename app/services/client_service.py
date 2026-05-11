@@ -38,6 +38,13 @@ def obtener_todos_los_clients(db: Session) -> Sequence[Client]:
 def obtener_clients_por_fecha(
     db: Session, init_date: datetime, last_date: datetime
 ) -> Sequence[Client]:
+
+    if init_date > last_date:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La fecha de inicio no puede ser posterior a la fecha de fin",
+        )
+
     sentencia = select(Client).where(
         Client.date.between(asegurar_utc(init_date), asegurar_utc(last_date))
     )
