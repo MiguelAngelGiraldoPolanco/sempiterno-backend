@@ -7,7 +7,10 @@ from pydantic import EmailStr
 from sqlmodel import Session, select
 
 
-def create_user(db: Session, user_data: UserCreate) -> User:
+def create_user(
+    db: Session,
+    user_data: UserCreate,
+) -> User:
     # if para asegurar que el cliente no exista en la base de datos
     if obtener_usuario_por_email(db, user_data.email):
         raise HTTPException(
@@ -30,17 +33,27 @@ def create_user(db: Session, user_data: UserCreate) -> User:
     return nuevo_user
 
 
-def obtener_usuario_por_id(db: Session, user_id: int) -> User | None:
+def obtener_usuario_por_id(
+    db: Session,
+    user_id: int,
+) -> User | None:
     return db.get(User, user_id)
 
 
-def obtener_usuario_por_email(db: Session, user_email: EmailStr) -> User | None:
+def obtener_usuario_por_email(
+    db: Session,
+    user_email: EmailStr,
+) -> User | None:
     sentencia = select(User).where(User.email == user_email)
 
     return db.exec(sentencia).first()
 
 
-def modificar_usuario(db: Session, user_id: int, user_data: User) -> User:
+def modificar_usuario(
+    db: Session,
+    user_id: int,
+    user_data: dict,
+) -> User:
     user_db = db.get(User, user_id)
     if not user_db:
         raise HTTPException(
@@ -48,8 +61,15 @@ def modificar_usuario(db: Session, user_id: int, user_data: User) -> User:
             detail="Usuario no encontrado",
         )
 
-    user_db.email = user_data.email
-    user_db.password_hash = user_data.password_hash
+    datos_nuevos = (
+        user_data
+        if isinstance(user_data, dict)
+        else user_data.model_dump(exclude_unset=True)
+    )
+
+    for llave, valor in datos_nuevos.items():
+        setattr(user_db, llave, valor)
+
     user_db.update_at = datetime.now(timezone.utc)
 
     db.add(user_db)
@@ -61,11 +81,14 @@ def modificar_usuario(db: Session, user_id: int, user_data: User) -> User:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No se pudo actualizar: el email ya está en uso o hubo un error interno",
+            detail="Error al actualizar: el email ya está en uso o hubo un error interno",
         )
 
 
-def eliminar_usuario(db: Session, user_id: int) -> dict:
+def eliminar_usuario(
+    db: Session,
+    user_id: int,
+) -> dict:
     user_db = db.get(User, user_id)
     if not user_db:
         raise HTTPException(
