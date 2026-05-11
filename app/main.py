@@ -20,3 +20,5 @@ async def on_startup():
 
 # Unimos la versión 1 a la aplicación principal
 app.include_router(api_v1_router, prefix="/api/v1")
+
+print("hola mundo")
