@@ -40,7 +40,10 @@ def obtener_usuario_por_email(db: Session, user_email: EmailStr) -> Optional[Use
 def modificar_usuario(db: Session, user_id: int, user_data: User) -> User:
     user_db = db.get(User, user_id)
     if not user_db:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado",
+        )
 
     user_db.email = user_data.email
     user_db.password_hash = user_data.password_hash
