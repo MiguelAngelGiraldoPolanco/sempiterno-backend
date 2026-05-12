@@ -16,4 +16,4 @@ class User(SQLModel, table=True):
 
 
 # Esto es crucial para Pydantic v2 / SQLModel moderno
-model_config = {"from_attributes": True}
+model_config = {"arbitrary_types_allowed": True, "from_attributes": True}

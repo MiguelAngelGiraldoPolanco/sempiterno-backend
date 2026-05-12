@@ -12,9 +12,7 @@ def crear_ticket(
     ticket_data: TicketCreate,
 ) -> Ticket:
 
-    ticket_dt = ticket_data.model_dump()
-
-    nuevo_ticket = Ticket(**ticket_dt)
+    nuevo_ticket = Ticket(**ticket_data.model_dump())
     db.add(nuevo_ticket)
     try:
         db.commit()
@@ -63,10 +61,21 @@ def obtener_tickets_por_fecha(
         )
 
     sentencia = select(Ticket).where(
-        Ticket.date.between(asegurar_utc(init_date), asegurar_utc(last_date))
+        Ticket.create_at.between(
+            asegurar_utc(init_date),
+            asegurar_utc(last_date),
+        )
     )
 
-    return db.exec(sentencia).all()
+    tickets = db.exec(sentencia).all()
+    total = sum(t.total for t in tickets)
+    cantidad = len(tickets)
+
+    return {
+        "total_ventas": total,
+        "cantidad_tickets": cantidad,
+        "tickets": tickets,
+    }
 
 
 def eliminar_ticket(

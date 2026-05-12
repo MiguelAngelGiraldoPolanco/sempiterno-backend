@@ -48,7 +48,7 @@ def crear_usuario(
     user_in: user.UserCreate,
     db: Session = Depends(database.get_session),
 ):
-    return user_service.crear_usuario(db, user_in)
+    return user_service.create_user(db, user_in)
 
 
 @router.put(

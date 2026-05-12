@@ -14,7 +14,7 @@ class ClientCreate(ClientBase):
 
 class ClientRead(ClientBase):
     id: int
-    date: datetime
+    create_at: datetime
 
     class Config:
         # Esto es vital para que Pydantic pueda leer

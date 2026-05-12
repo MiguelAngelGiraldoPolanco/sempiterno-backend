@@ -12,4 +12,4 @@ class Client(SQLModel, table=True):
 
 
 # Esto es CRUCIAL en Pydantic v2 / SQLModel moderno
-model_config = {"from_attributes": True}
+model_config = {"arbitrary_types_allowe": True, "from_attributes": True}

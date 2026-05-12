@@ -32,7 +32,7 @@ def obtener_ticket(
 
 @router.get(
     "/reporte/fechas",
-    response_model=list[ticket.ReporteMensual],
+    response_model=ticket.ReporteMensual,
 )
 def reporte_mensual(
     inicio: datetime,

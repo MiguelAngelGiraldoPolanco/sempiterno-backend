@@ -31,7 +31,7 @@ class TicketCreate(TicketBase):
 # Aquí sí incluimos el ID y la fecha que generó la DB
 class TicketRead(TicketBase):
     id: int
-    date: datetime
+    create_at: datetime
 
     class Config:
         # Esto es vital para que Pydantic pueda leer

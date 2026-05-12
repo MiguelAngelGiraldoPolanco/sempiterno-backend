@@ -53,7 +53,7 @@ def obtener_clients_por_fecha(
         )
 
     sentencia = select(Client).where(
-        Client.date.between(asegurar_utc(init_date), asegurar_utc(last_date))
+        Client.create_at.between(asegurar_utc(init_date), asegurar_utc(last_date))
     )
 
     return db.exec(sentencia).all()
