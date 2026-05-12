@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from app.core import security
 from app.models.user import User
 from app.schemas.user import UserCreate
 from fastapi import HTTPException, status
@@ -15,9 +16,17 @@ def create_user(
     if obtener_usuario_por_email(db, user_data.email):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="El cliente ya existe",
+            detail="El usuaerio ya existe",
         )
-    nuevo_user = User(**user_data.model_dump())
+
+    datos_usuario = user_data.model_dump()
+
+    password_plana = datos_usuario.pop("password_hash")
+
+    password_hasheada = security.get_password_hash(password_plana)
+
+    nuevo_user = User(**datos_usuario, password_hash=password_hasheada)
+
     db.add(nuevo_user)
     try:
         db.commit()
@@ -31,6 +40,31 @@ def create_user(
     db.refresh(nuevo_user)
 
     return nuevo_user
+
+
+def user_login(
+    db: Session,
+    user_data: UserCreate,
+) -> dict:
+    user = obtener_usuario_por_email(db, user_data.email)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciales inválidas",
+        )
+
+    if not security.verify_password(user_data.password_hash, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciales inválidas",
+        )
+    token = security.create_access_token(subject=user.id)
+
+    # 5. Respondemos con el formato estándar
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+    }
 
 
 def obtener_usuario_por_id(

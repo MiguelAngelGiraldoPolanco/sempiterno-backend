@@ -2,13 +2,13 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from pydantic import EmailStr
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, String
 
 
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     email: EmailStr = Field(unique=True, index=True)
-    password_hash: str
+    password_hash: str = Field(sa_type=String(255))
     is_admin: bool = Field(default=False)
     # CORRECCIÓN AQUÍ: Usamos una función que devuelva el tiempo actual
     create_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from sqlmodel import SQLModel
 
 from app.api.v1.api_v1 import api_router as api_v1_router
+from app.core.config import settings
 from app.db.database import engine
 
 
@@ -10,7 +11,7 @@ def init_db():
     SQLModel.metadata.create_all(engine)
 
 
-app = FastAPI(title="Sempiterno API")
+app = FastAPI(title=settings.PROJECT_NAME)
 
 
 @app.on_event("startup")

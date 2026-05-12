@@ -1,11 +1,16 @@
+from typing import Annotated
+
 from app.db import database
 from app.schemas import user
 from app.services import user_service
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import EmailStr
 from sqlmodel import Session
 
 router = APIRouter(prefix="/users", tags=["Users"])
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.get(
@@ -13,10 +18,11 @@ router = APIRouter(prefix="/users", tags=["Users"])
     response_model=user.UserRead,
 )
 def obtener_usuario_por_id(
+    token: Annotated[str, Depends(oauth2_scheme)],
     id_user: int,
     db: Session = Depends(database.get_session),
 ):
-    return user_service.obtener_usuario_por_id(db, id_user)
+    return user_service.obtener_usuario_por_id(db, id_user), {"token": token}
 
 
 @router.get(
