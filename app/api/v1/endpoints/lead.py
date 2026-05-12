@@ -3,61 +3,61 @@
 from datetime import datetime
 
 from app.db import database
-from app.schemas import client
-from app.services import client_service
+from app.schemas import lead
+from app.services import lead_service
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import EmailStr
 from sqlmodel import Session
 
-router = APIRouter(prefix="/clients", tags=["Clients"])
+router = APIRouter(prefix="/leads", tags=["Leads"])
 
 
 @router.get(
     "/",
-    response_model=list[client.ClientRead],
+    response_model=list[lead.LeadRead],
 )
-def read_client(
+def read_lead(
     db: Session = Depends(database.get_session),
 ):
-    return client_service.obtener_todos_los_clients(db)
+    return lead_service.obtener_todos_los_leads(db)
 
 
 @router.get(
     "/reporte/fechas",
-    response_model=list[client.ClientRead],
+    response_model=list[lead.LeadRead],
 )
 def reporte_mensual(
     inicio: datetime,
     fin: datetime,
     db: Session = Depends(database.get_session),
 ):
-    return client_service.obtener_clients_por_fecha(db, inicio, fin)
+    return lead_service.obtener_leads_por_fecha(db, inicio, fin)
 
 
 @router.get(
-    "/email/{email_cliente}",
-    response_model=client.ClientRead,
+    "/email/{email_lead}",
+    response_model=lead.LeadRead,
 )
-def read_client_email(
-    email_cliente: EmailStr,
+def read_lead_email(
+    email_lead: EmailStr,
     db: Session = Depends(database.get_session),
 ):
-    client = client_service.obtener_clients_por_email(db, email_cliente)
-    if not client:
+    lead = lead_service.obtener_leads_por_email(db, email_lead)
+    if not lead:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Cliente no encontrado",
+            detail="Lead no encontrado",
         )
-    return client
+    return lead
 
 
 @router.post(
     "/",
-    response_model=client.ClientRead,
+    response_model=lead.LeadRead,
     status_code=status.HTTP_201_CREATED,
 )
-def crear_cliente(
-    client_in: client.ClientCreate,
+def crear_lead(
+    lead_in: lead.LeadCreate,
     db: Session = Depends(database.get_session),
 ):
-    return client_service.crear_client(db, client_in)
+    return lead_service.crear_lead(db, lead_in)
