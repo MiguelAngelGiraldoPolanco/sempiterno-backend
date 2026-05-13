@@ -46,7 +46,18 @@ def obtener_usuario_por_email(
 
 
 @router.post(
-    "/",
+    "/login",
+    response_model=user.UserLogin,
+)
+def login_usuario(
+    user_in: user.UserCreate,
+    db: Session = Depends(database.get_session),
+):
+    return user_service.user_login(db, user_in)
+
+
+@router.post(
+    "/create",
     response_model=user.UserRead,
     status_code=status.HTTP_201_CREATED,
 )
