@@ -3,7 +3,8 @@ from datetime import datetime, timezone
 from app.core import security
 from app.models.user import User
 from app.schemas.user import UserCreate
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
 from sqlmodel import Session, select
 
@@ -44,17 +45,17 @@ def create_user(
 
 def user_login(
     db: Session,
-    user_data: UserCreate,
+    user_data: OAuth2PasswordRequestForm = Depends(),
 ) -> dict:
 
-    user = obtener_usuario_por_email(db, user_data.email)
+    user = obtener_usuario_por_email(db, user_data.username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenciales inválidas",
         )
 
-    if not security.verify_password(user_data.password_hash, user.password_hash):
+    if not security.verify_password(user_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenciales inválidas",
