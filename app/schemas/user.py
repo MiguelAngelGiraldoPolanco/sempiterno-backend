@@ -19,6 +19,8 @@ class UserUpdate(BaseModel):
 
 class UserLogin(BaseModel):
     id: int
+    access_token: str
+    token_type: str
 
 
 class UserRead(UserBase):
