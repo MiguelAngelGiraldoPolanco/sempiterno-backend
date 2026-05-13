@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, List
 
 if TYPE_CHECKING:
-    from app.models.coupons import Coupon
+    from app.models.coupon import Coupon
     from app.models.lead import Lead
 
 from sqlmodel import JSON, Column, Field, Relationship, SQLModel
