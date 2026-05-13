@@ -1,10 +1,10 @@
+import secrets
 from datetime import datetime, timezone
 from typing import Sequence
 
+from app.api.resend import email_verify
 from app.models.lead import Lead
 from app.schemas.lead import LeadCreate
-
-# ÑÑÑÑ
 from fastapi import HTTPException, status
 from pydantic import EmailStr
 from sqlmodel import Session, select
@@ -14,24 +14,56 @@ def crear_lead(
     db: Session,
     lead_data: LeadCreate,
 ) -> Lead:
-    # Evaluamos primero si el email existe para que no pueda acceder a muchos desceuntos con el mismo email
-    if obtener_leads_por_email(db, lead_data.email):
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="El lead ya existe",
-        )
-    nuevo_lead = Lead(**lead_data.model_dump())
+    # 1. Buscamos si el lead ya existe
+    lead_existente = obtener_leads_por_email(db, lead_data.email)
+
+    if lead_existente:
+        # Caso A: Ya está verificado
+        if lead_existente.is_verify:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Este correo ya canjeó su cupón anteriormente.",
+            )
+
+        # Caso B: Existe pero NO está verificado (Re-intento)
+        # Generamos nuevo token para el registro que ya tenemos
+        token = token = secrets.token_urlsafe(32)
+        lead_existente.verification_token = token
+        # Actualizamos el nombre por si lo escribió distinto
+        lead_existente.name = lead_data.name
+
+        db.add(lead_existente)
+        try:
+            db.commit()
+            db.refresh(lead_existente)
+            email_verify(lead_existente.email, lead_existente.name, token)
+            return lead_existente
+        except Exception:
+            db.rollback()
+            raise HTTPException(
+                status_code=500, detail="Error al actualizar el registro"
+            )
+
+    # 2. Si NO existe, creamos uno nuevo desde cero
+    token = token = secrets.token_urlsafe(32)
+
+    nuevo_lead = Lead(
+        **lead_data.model_dump(), verification_token=token, is_verify=False
+    )
+
     db.add(nuevo_lead)
     try:
         db.commit()
-    except Exception:
+        db.refresh(nuevo_lead)
+        # Pasamos el token a la función de email para que cree el link
+        email_verify(nuevo_lead.email, nuevo_lead.name, token)
+    except Exception as e:
         db.rollback()
+        print(f"Error: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Error de integridad, intente de nuevo",
         )
-
-    db.refresh(nuevo_lead)
 
     return nuevo_lead
 

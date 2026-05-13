@@ -63,6 +63,5 @@ def read_lead_email(
 def crear_lead(
     lead_in: lead.LeadCreate,
     db: Session = Depends(database.get_session),
-    current_admin: User = Depends(get_current_admin_user),
 ):
     return lead_service.crear_lead(db, lead_in)
