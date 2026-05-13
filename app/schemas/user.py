@@ -17,6 +17,10 @@ class UserUpdate(BaseModel):
     password_hash: Optional[str] = None
 
 
+class UserLogin(BaseModel):
+    id: int
+
+
 class UserRead(UserBase):
     id: int
     create_at: datetime
