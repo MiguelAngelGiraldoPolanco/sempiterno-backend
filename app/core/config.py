@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "My App"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    RESEND_APY_KEY: str | None = None
 
     # 2. Configuración para leer el archivo .env
     # 'extra="ignore"' evita que la app truene si hay más variables en el .env
