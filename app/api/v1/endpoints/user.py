@@ -1,16 +1,14 @@
-from typing import Annotated
-
+from app.api.deps import get_current_admin_user
 from app.db import database
+from app.models.user import User
 from app.schemas import user
 from app.services import user_service
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
 from sqlmodel import Session
 
 router = APIRouter(prefix="/users", tags=["Users"])
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.get(
@@ -18,11 +16,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
     response_model=user.UserRead,
 )
 def obtener_usuario_por_id(
-    token: Annotated[str, Depends(oauth2_scheme)],
     id_user: int,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
-    return user_service.obtener_usuario_por_id(db, id_user), {"token": token}
+    return user_service.obtener_usuario_por_id(db, id_user)
 
 
 @router.get(
@@ -32,6 +30,7 @@ def obtener_usuario_por_id(
 def obtener_usuario_por_email(
     email_user: EmailStr,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     user = user_service.obtener_usuario_por_email(
         db,
@@ -50,8 +49,8 @@ def obtener_usuario_por_email(
     response_model=user.UserLogin,
 )
 def login_usuario(
-    user_in: user.UserCreate,
     db: Session = Depends(database.get_session),
+    user_in: OAuth2PasswordRequestForm = Depends(),
 ):
     return user_service.user_login(db, user_in)
 
@@ -64,6 +63,7 @@ def login_usuario(
 def crear_usuario(
     user_in: user.UserCreate,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return user_service.create_user(db, user_in)
 
@@ -76,6 +76,7 @@ def modificar_usuario(
     user_in: user.UserUpdate,
     user_id: int,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return user_service.modificar_usuario(db, user_id, user_in)
 
@@ -86,5 +87,6 @@ def modificar_usuario(
 def eliminar_usuario(
     id_user: int,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return user_service.eliminar_usuario(db, id_user)

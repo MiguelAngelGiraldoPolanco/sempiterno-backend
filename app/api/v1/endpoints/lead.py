@@ -1,8 +1,9 @@
 # Archivo diseñado para recibir los correos de los posibles clientes pero aun no son usuarios de la tienda solo dejan sus correos para recibir descuerstos de los lanzamientos mensuales
-
 from datetime import datetime
 
+from app.api.deps import get_current_admin_user
 from app.db import database
+from app.models.user import User
 from app.schemas import lead
 from app.services import lead_service
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -18,6 +19,7 @@ router = APIRouter(prefix="/leads", tags=["Leads"])
 )
 def read_lead(
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return lead_service.obtener_todos_los_leads(db)
 
@@ -30,6 +32,7 @@ def reporte_mensual(
     inicio: datetime,
     fin: datetime,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return lead_service.obtener_leads_por_fecha(db, inicio, fin)
 
@@ -41,6 +44,7 @@ def reporte_mensual(
 def read_lead_email(
     email_lead: EmailStr,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     lead_emails = lead_service.obtener_leads_por_email(db, email_lead)
     if not lead_emails:
@@ -59,5 +63,6 @@ def read_lead_email(
 def crear_lead(
     lead_in: lead.LeadCreate,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return lead_service.crear_lead(db, lead_in)

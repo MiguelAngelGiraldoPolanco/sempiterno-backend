@@ -1,6 +1,8 @@
 from datetime import datetime
 
+from app.api.deps import get_current_admin_user
 from app.db import database
+from app.models.user import User
 from app.schemas import ticket
 from app.services import ticket_service
 from fastapi import APIRouter, Depends, status
@@ -15,6 +17,7 @@ router = APIRouter(prefix="/tikects", tags=["Tikects"])
 )
 def read_tickets(
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return ticket_service.obtener_todos_los_tickets(db)
 
@@ -26,6 +29,7 @@ def read_tickets(
 def obtener_ticket(
     ticket_id: int,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return ticket_service.obtener_ticket_por_id(db, ticket_id)
 
@@ -38,6 +42,7 @@ def reporte_mensual(
     inicio: datetime,
     fin: datetime,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return ticket_service.obtener_tickets_por_fecha(db, inicio, fin)
 
@@ -50,6 +55,7 @@ def reporte_mensual(
 def crear_ticket(
     ticket_in: ticket.TicketCreate,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return ticket_service.crear_ticket(db, ticket_in)
 
@@ -60,5 +66,6 @@ def crear_ticket(
 def delete_ticket(
     ticket_id: int,
     db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
 ):
     return ticket_service.eliminar_ticket(db, ticket_id)
