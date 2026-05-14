@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Sequence
 
-from app.models.ticket import Ticket
+from app.models.db_model import Ticket
 from app.schemas.ticket import TicketCreate
 from fastapi import HTTPException, status
 from sqlmodel import Session, select

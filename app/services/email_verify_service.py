@@ -1,6 +1,6 @@
 from typing import Any
 
-from app.models.lead import Lead
+from app.models.db_model import Lead
 from fastapi import HTTPException, status
 from sqlmodel import Session, select
 

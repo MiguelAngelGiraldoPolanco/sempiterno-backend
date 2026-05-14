@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Sequence
 
-from app.models.coupon import Coupon
+from app.models.db_model import Coupon
 from app.schemas.coupon import CouponCreate
 from fastapi import HTTPException, status
 from sqlmodel import Session, select
@@ -32,7 +32,7 @@ def crear_cupon(
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Error de integridad, intente de nuevo",
+            detail="Error de integridad, intente de nuevo 123",
         )
 
     db.refresh(nuevo_cupon)

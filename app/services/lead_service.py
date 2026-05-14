@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import Sequence
 
 from app.api.resend import email_verify
-from app.models.lead import Lead
+from app.models.db_model import Lead
 from app.schemas.lead import LeadCreate
 from fastapi import HTTPException, status
 from pydantic import EmailStr
@@ -41,7 +41,8 @@ def crear_lead(
         except Exception:
             db.rollback()
             raise HTTPException(
-                status_code=500, detail="Error al actualizar el registro"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error al actualizar el registro",
             )
 
     # 2. Si NO existe, creamos uno nuevo desde cero
