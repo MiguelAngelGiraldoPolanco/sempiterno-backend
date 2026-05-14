@@ -1,22 +1,17 @@
 from fastapi import FastAPI
-from sqlmodel import SQLModel
 
 from app.api.v1.api_v1 import api_router as api_v1_router
 from app.core.config import settings
-from app.db.database import engine
-
+from app.db.database import create_db_and_tables, create_user
 
 # Esta función se ejecuta al arrancar la app
-def init_db():
-    SQLModel.metadata.create_all(engine)
-
-
 app = FastAPI(title=settings.PROJECT_NAME)
 
 
 @app.on_event("startup")
 def on_startup():
-    init_db()
+    create_db_and_tables()
+    create_user()
 
 
 # Unimos la versión 1 a la aplicación principal
