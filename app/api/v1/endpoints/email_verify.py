@@ -4,10 +4,10 @@ from app.services import email_verify_service
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
-router = APIRouter(prefix="/email_verify", tags=["Leads"])
+router = APIRouter(prefix="/leads", tags=["Leads"])
 
 
-@router.get("/verify", response_model=email_verify.VerificationResponse)
+@router.get("/email_verify", response_model=email_verify.VerificationResponse)
 def verify_email(
     token: str,
     db: Session = Depends(database.get_session),
