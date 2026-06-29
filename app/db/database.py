@@ -1,9 +1,11 @@
 from typing import Generator
 
+from sqlmodel import Session, SQLModel, create_engine
+
 from app.core.config import settings
 from app.core.security import get_password_hash
 from app.models.user import User
-from sqlmodel import Session, SQLModel, create_engine
+from app.services.user_service import obtener_usuario_por_email
 
 # El motor: "check_same_thread" es necesario solo para SQLite
 engine = create_engine(settings.DATABASE_URL, echo=True)
@@ -12,11 +14,17 @@ engine = create_engine(settings.DATABASE_URL, echo=True)
 # creamos un usuario para pruebas en sqlite
 def create_user():
     with Session(engine) as session:
+        admin = obtener_usuario_por_email(session, settings.ADMIN_EMAIL)
+
+        if admin:
+            return
+
         admin = User(
-            email="admin@admin.com",
-            password_hash=get_password_hash("admin123"),
+            email=settings.ADMIN_EMAIL,
+            password_hash=get_password_hash(settings.ADMIN_PASSWORD),
             is_admin=True,
         )
+
         session.add(admin)
         session.commit()
         session.refresh(admin)
