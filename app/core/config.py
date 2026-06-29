@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     RESEND_APY_KEY: str | None = None
+    ADMIN_EMAIL: str
+    ADMIN_PASSWORD: str
 
     # 2. Configuración para leer el archivo .env
     # 'extra="ignore"' evita que la app truene si hay más variables en el .env
