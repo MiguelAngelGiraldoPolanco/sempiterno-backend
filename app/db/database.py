@@ -8,7 +8,7 @@ from app.models.user import User
 from app.services.user_service import obtener_usuario_por_email
 
 # El motor: "check_same_thread" es necesario solo para SQLite
-engine = create_engine(settings.DATABASE_URL, echo=True)
+engine = create_engine(settings.DATABASE_URL, echo=settings.DB_ECHO)
 
 
 # creamos un usuario para pruebas en sqlite

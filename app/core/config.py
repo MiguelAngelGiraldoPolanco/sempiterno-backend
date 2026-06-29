@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     RESEND_APY_KEY: str | None = None
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
+    DB_ECHO: bool = False
 
     # 2. Configuración para leer el archivo .env
     # 'extra="ignore"' evita que la app truene si hay más variables en el .env
