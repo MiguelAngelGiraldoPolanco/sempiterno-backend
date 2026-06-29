@@ -33,3 +33,6 @@ build/
 
 
 .aider*
+
+# --- Memoria de Claude (no subir a GitHub) ---
+.claude-memory
