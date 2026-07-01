@@ -36,3 +36,6 @@ build/
 
 # --- Memoria de Claude (no subir a GitHub) ---
 .claude-memory
+
+# --- Notas personales de estudio ---
+GLOSARIO-MID.md
