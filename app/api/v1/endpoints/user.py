@@ -1,12 +1,14 @@
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import EmailStr
+from sqlmodel import Session
+
 from app.api.deps import get_current_admin_user
+from app.core.limiter import limiter
 from app.db import database
 from app.models.user import User
 from app.schemas import user
 from app.services import user_service
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import EmailStr
-from sqlmodel import Session
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -48,7 +50,9 @@ def obtener_usuario_por_email(
     "/login",
     response_model=user.UserLogin,
 )
+@limiter.limit("5/minute")
 def login_usuario(
+    request: Request,
     db: Session = Depends(database.get_session),
     user_in: OAuth2PasswordRequestForm = Depends(),
 ):
