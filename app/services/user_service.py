@@ -1,12 +1,13 @@
 from datetime import datetime, timezone
 
-from app.core import security
-from app.models.user import User
-from app.schemas.user import UserCreate
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
 from sqlmodel import Session, select
+
+from app.core import security
+from app.models.user import User
+from app.schemas.user import UserCreate
 
 
 def create_user(
@@ -22,7 +23,7 @@ def create_user(
 
     datos_usuario = user_data.model_dump()
 
-    password_plana = datos_usuario.pop("password_hash")
+    password_plana = datos_usuario.pop("password")
 
     password_hasheada = security.get_password_hash(password_plana)
 
