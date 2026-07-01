@@ -111,8 +111,18 @@ def modificar_usuario(
         else user_data.model_dump(exclude_unset=True)
     )
 
-    for llave, valor in datos_nuevos.items():
-        setattr(user_db, llave, valor)
+    if "email" in datos_nuevos:
+        user_existente = obtener_usuario_por_email(db, datos_nuevos["email"])
+
+        if user_existente and user_existente.id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Ya hay un usuario con ese email",
+            )
+        user_db.email = datos_nuevos["email"]
+
+    if "password" in datos_nuevos:
+        user_db.password_hash = security.get_password_hash(datos_nuevos["password"])
 
     user_db.update_at = datetime.now(timezone.utc)
 
