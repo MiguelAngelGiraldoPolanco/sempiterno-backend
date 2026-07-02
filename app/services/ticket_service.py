@@ -1,10 +1,11 @@
 from datetime import datetime, timezone
 from typing import Sequence
 
-from app.models.db_model import Ticket
-from app.schemas.ticket import TicketCreate
 from fastapi import HTTPException, status
 from sqlmodel import Session, select
+
+from app.models.db_model import Ticket
+from app.schemas.ticket import TicketCreate, TicketUpdate
 
 
 def crear_ticket(
@@ -76,6 +77,52 @@ def obtener_tickets_por_fecha(
         "cantidad_tickets": cantidad,
         "tickets": tickets,
     }
+
+
+def actualizar_ticket(
+    db: Session,
+    ticket_id: int,
+    ticket_data: TicketUpdate,
+) -> Ticket:
+
+    ticket_db = db.get(Ticket, ticket_id)
+    if not ticket_db:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Ticket no encontrado",
+        )
+
+    datos_nuevos = (
+        ticket_data
+        if isinstance(ticket_data, dict)
+        else ticket_data.model_dump(exclude_unset=True)
+    )
+
+    if "products" in datos_nuevos:
+        ticket_db.products = datos_nuevos["products"]
+
+    if "total" in datos_nuevos:
+        ticket_db.total = datos_nuevos["total"]
+
+    if "iva" in datos_nuevos:
+        ticket_db.iva = datos_nuevos["iva"]
+
+    if "paid" in datos_nuevos:
+        ticket_db.paid = datos_nuevos["paid"]
+
+    ticket_db.update_at = datetime.now(timezone.utc)
+
+    db.add(ticket_db)
+    try:
+        db.commit()
+        db.refresh(ticket_db)
+        return ticket_db
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error de integridad, intente de nuevo",
+        )
 
 
 def eliminar_ticket(

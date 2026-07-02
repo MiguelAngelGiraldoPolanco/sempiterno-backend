@@ -32,7 +32,15 @@ class TicketCreate(TicketBase):
 class TicketRead(TicketBase):
     id: int
     create_at: datetime
+    paid: bool
+    model_config = ConfigDict(from_attributes=True)
 
+
+class TicketUpdate(BaseModel):
+    products: List[ProductoItem] | None = None
+    total: float | None = None
+    iva: float | None = None
+    paid: bool | None = None
     model_config = ConfigDict(from_attributes=True)
 
 

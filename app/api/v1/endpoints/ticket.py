@@ -1,12 +1,13 @@
 from datetime import datetime
 
+from fastapi import APIRouter, Depends, status
+from sqlmodel import Session
+
 from app.api.deps import get_current_admin_user
 from app.db import database
 from app.models.user import User
 from app.schemas import ticket
 from app.services import ticket_service
-from fastapi import APIRouter, Depends, status
-from sqlmodel import Session
 
 router = APIRouter(prefix="/tikects", tags=["Tikects"])
 
@@ -58,6 +59,19 @@ def crear_ticket(
     current_admin: User = Depends(get_current_admin_user),
 ):
     return ticket_service.crear_ticket(db, ticket_in)
+
+
+@router.put(
+    "/{ticket_id}",
+    response_model=ticket.TicketRead,
+)
+def actualizar_ticket(
+    ticket_id: int,
+    ticket_in: ticket.TicketUpdate,
+    db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
+):
+    return ticket_service.actualizar_ticket(db, ticket_id, ticket_in)
 
 
 @router.delete(
