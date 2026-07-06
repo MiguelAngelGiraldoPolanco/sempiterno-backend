@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     ADMIN_PASSWORD: str
     DB_ECHO: bool = False
     CORS_ORIGINS: list[str] = []
+    CC: str | None = None
+    NEQUI: str | None = None
+    DAVIPLATA: str | None = None
+    NIT: str | None = None
+    DIRECTION: str | None = None
+    RESPONSIBLE: str | None = None
 
     # 2. Configuración para leer el archivo .env
     # 'extra="ignore"' evita que la app truene si hay más variables en el .env

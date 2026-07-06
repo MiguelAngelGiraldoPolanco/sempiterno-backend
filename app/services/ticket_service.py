@@ -1,11 +1,18 @@
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Sequence
 
 from fastapi import HTTPException, status
+from jinja2 import Environment, FileSystemLoader
 from sqlmodel import Session, select
+from weasyprint import HTML
 
+from app.core.config import settings
 from app.models.db_model import Ticket
 from app.schemas.ticket import ProductoItem, TicketCreate, TicketUpdate
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+templates = Environment(loader=FileSystemLoader("app/templates"))
 
 
 def crear_ticket(
@@ -156,3 +163,23 @@ def calcular_total_con_iva(
 ) -> float:
     total_productos = sum(p.cantidad * p.precio_unidad for p in products)
     return total_productos * (1 + iva / 100)
+
+
+def generar_factura_pdf(ticket) -> bytes:
+    template = templates.get_template("factura.html")
+    html = template.render(
+        numero=ticket.id,
+        cliente=ticket.customerName,
+        fecha=ticket.create_at.strftime("%d/%m/%Y"),
+        productos=ticket.products,
+        total=ticket.total,
+        abono=ticket.total * 0.5,
+        pagado=ticket.paid,
+        nequi=settings.NEQUI,
+        daviplata=settings.DAVIPLATA,
+        cc=settings.CC,
+        direction=settings.DIRECTION,
+        responsible=settings.RESPONSIBLE,
+        nit=settings.NIT,
+    )
+    return HTML(string=html, base_url=str(BASE_DIR)).write_pdf()

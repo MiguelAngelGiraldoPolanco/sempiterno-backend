@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Response, status
 from sqlmodel import Session
 
 from app.api.deps import get_current_admin_user
@@ -46,6 +46,23 @@ def reporte_mensual(
     current_admin: User = Depends(get_current_admin_user),
 ):
     return ticket_service.obtener_tickets_por_fecha(db, inicio, fin)
+
+
+@router.get("/{ticket_id}/factura")
+def descargar_factura(
+    ticket_id: int,
+    db: Session = Depends(database.get_session),
+    current_admin: User = Depends(get_current_admin_user),
+):
+    ticket = ticket_service.obtener_ticket_por_id(db, ticket_id)
+    pdf = ticket_service.generar_factura_pdf(ticket)
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=factura_{ticket_id}.pdf"
+        },
+    )
 
 
 @router.post(

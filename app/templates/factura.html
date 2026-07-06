@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <style>
+    @page {
+      size: A4;
+      margin: 2cm;
+    }
+
+    body {
+      font-family: "Helvetica", "Arial", sans-serif;
+      color: #333;
+      font-size: 13px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .header .logo {
+      width: 180px;
+      height: auto;
+    }
+
+    h1 {
+      color: #6b2c5f;
+      font-size: 26px;
+      margin: 0 0 4px 0;
+      letter-spacing: 1px;
+    }
+
+    .muted {
+      color: #555;
+    }
+
+    .seller {
+      margin-top: 24px;
+      line-height: 1.5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 32px;
+    }
+
+    thead th {
+      background: #e3d0dd;
+      color: #4a3040;
+      text-align: left;
+      padding: 12px 14px;
+      font-weight: 600;
+    }
+
+    thead th.num {
+      text-align: center;
+    }
+
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #eee;
+    }
+
+    tbody td.num {
+      text-align: center;
+    }
+
+    tbody td.money {
+      text-align: right;
+    }
+
+    .totales {
+      margin-top: 28px;
+    }
+
+    .totales .total-row {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .totales .abono {
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .footer {
+      background: #e3d0dd;
+      padding: 18px 22px;
+      margin-top: 48px;
+      color: #4a3040;
+      line-height: 1.5;
+    }
+
+    .footer h3 {
+      margin: 14px 0 6px 0;
+    }
+
+    .badge-pagado {
+      color: #1a7f37;
+      font-weight: 700;
+    }
+
+    .badge-pendiente {
+      color: #b3261e;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div>
+      <h1>FACTURA N° {{ numero }}</h1>
+      <p class="muted"><strong>CLIENTE:</strong> {{ cliente }}</p>
+      <p class="muted"><strong>FECHA DE EXPEDICIÓN:</strong> {{ fecha }}</p>
+    </div>
+    <img class="logo" src="public/logo.png" alt="Logo">
+  </div>
+
+  <div class="seller">
+    <strong>{{ responsible }}</strong><br>
+    Nit. {{ nit }}<br>
+    Direccion: {{ direction }}<br>
+    Somos un emprendimiento de velas artesanales con insumos 100% ecológicos
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Descripción</th>
+        <th class="num">Cantidad</th>
+        <th class="num">Precio</th>
+        <th class="num">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in productos %}
+      <tr>
+        <td>{{ p.nombre }}</td>
+        <td class="num">{{ p.cantidad }}</td>
+        <td class="money">${{ "{:,.0f}".format(p.precio_unidad).replace(",", ".") }}</td>
+        <td class="money">${{ "{:,.0f}".format(p.cantidad * p.precio_unidad).replace(",", ".") }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="totales">
+    <p class="total-row">TOTAL: ${{ "{:,.0f}".format(total).replace(",", ".") }}</p>
+    <p class="abono">ABONO: ${{ "{:,.0f}".format(abono).replace(",", ".") }}</p>
+    <p>Estado:
+      {% if pagado %}<span class="badge-pagado">PAGADO</span>
+      {% else %}<span class="badge-pendiente">PENDIENTE</span>{% endif %}
+    </p>
+  </div>
+
+  <div class="footer">
+    PARA HACER EFECTIVO EL PEDIDO SE DEBE CONSIGNAR EL 50% DEL TOTAL Y AL ENTREGAR
+    EL PRODUCTO EL RESTANTE. GRACIAS POR SU COMPRENSIÓN Y APOYO.
+    <h3>MÉTODOS DE PAGO</h3>
+    Nequi: {{ nequi }} — {{ responsible }}<br>
+    Daviplata: {{ daviplata }} — {{ responsible }}<br>
+    C.c: {{ cc }}
+  </div>
+
+</body>
+
+</html>
