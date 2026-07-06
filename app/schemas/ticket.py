@@ -16,7 +16,6 @@ class ProductoItem(BaseModel):
 class TicketBase(BaseModel):
     customerName: str
     products: List[ProductoItem]
-    total: float
     iva: float = 0.0
 
 
@@ -34,11 +33,11 @@ class TicketRead(TicketBase):
     create_at: datetime
     paid: bool
     model_config = ConfigDict(from_attributes=True)
+    total: float
 
 
 class TicketUpdate(BaseModel):
     products: List[ProductoItem] | None = None
-    total: float | None = None
     iva: float | None = None
     paid: bool | None = None
     model_config = ConfigDict(from_attributes=True)

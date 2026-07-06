@@ -5,7 +5,7 @@ from fastapi import HTTPException, status
 from sqlmodel import Session, select
 
 from app.models.db_model import Ticket
-from app.schemas.ticket import TicketCreate, TicketUpdate
+from app.schemas.ticket import ProductoItem, TicketCreate, TicketUpdate
 
 
 def crear_ticket(
@@ -14,6 +14,9 @@ def crear_ticket(
 ) -> Ticket:
 
     nuevo_ticket = Ticket(**ticket_data.model_dump())
+
+    nuevo_ticket.total = calcular_total_con_iva(ticket_data.products, ticket_data.iva)
+
     db.add(nuevo_ticket)
     try:
         db.commit()
@@ -97,15 +100,13 @@ def actualizar_ticket(
         if isinstance(ticket_data, dict)
         else ticket_data.model_dump(exclude_unset=True)
     )
+    if "iva" in datos_nuevos:
+        ticket_db.iva = datos_nuevos["iva"]
 
     if "products" in datos_nuevos:
         ticket_db.products = datos_nuevos["products"]
 
-    if "total" in datos_nuevos:
-        ticket_db.total = datos_nuevos["total"]
-
-    if "iva" in datos_nuevos:
-        ticket_db.iva = datos_nuevos["iva"]
+        ticket_db.total = calcular_total_con_iva(ticket_data.products, ticket_db.iva)
 
     if "paid" in datos_nuevos:
         ticket_db.paid = datos_nuevos["paid"]
@@ -147,3 +148,11 @@ def asegurar_utc(
     if dt.tzinfo is None:
         return dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(timezone.utc)
+
+
+def calcular_total_con_iva(
+    products: list[ProductoItem],
+    iva: float,
+) -> float:
+    total_productos = sum(p.cantidad * p.precio_unidad for p in products)
+    return total_productos * (1 + iva / 100)
