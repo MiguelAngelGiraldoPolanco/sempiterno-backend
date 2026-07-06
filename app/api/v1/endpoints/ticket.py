@@ -9,7 +9,7 @@ from app.models.user import User
 from app.schemas import ticket
 from app.services import ticket_service
 
-router = APIRouter(prefix="/tikects", tags=["Tikects"])
+router = APIRouter(prefix="/tickets", tags=["Tickets"])
 
 
 @router.get(
