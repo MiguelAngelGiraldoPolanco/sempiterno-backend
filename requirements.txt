@@ -6,6 +6,7 @@ uvicorn==0.46.0
 # --- Database ---
 psycopg2-binary==2.9.12
 SQLAlchemy==2.0.49
+alembic==1.14.0
 
 # --- Data & Validation ---
 pandas==3.0.2

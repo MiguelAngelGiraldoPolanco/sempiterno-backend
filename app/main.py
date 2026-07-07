@@ -6,7 +6,7 @@ from slowapi.errors import RateLimitExceeded
 from app.api.v1.api_v1 import api_router as api_v1_router
 from app.core.config import settings
 from app.core.limiter import limiter
-from app.db.database import create_db_and_tables, create_user
+from app.db.database import create_user
 
 # Esta función se ejecuta al arrancar la app
 app = FastAPI(title=settings.PROJECT_NAME)
@@ -27,7 +27,6 @@ app.add_middleware(
 
 @app.on_event("startup")
 def on_startup():
-    create_db_and_tables()
     create_user()
 
 
