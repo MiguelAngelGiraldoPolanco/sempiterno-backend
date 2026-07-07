@@ -12,6 +12,6 @@ class User(SQLModel, table=True):
     # CORRECCIÓN AQUÍ: Usamos una función que devuelva el tiempo actual
     create_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     update_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
+    is_active: bool = Field(default=True)
     # Esto es crucial para Pydantic v2 / SQLModel moderno
     model_config = {"arbitrary_types_allowed": True, "from_attributes": True}
