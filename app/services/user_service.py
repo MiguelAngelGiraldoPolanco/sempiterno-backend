@@ -1,13 +1,12 @@
 from datetime import datetime, timezone
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import HTTPException, status
 from pydantic import EmailStr
 from sqlmodel import Session, select
 
 from app.core import security
 from app.models.user import User
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserLoginRequest
 
 
 def create_user(
@@ -46,10 +45,10 @@ def create_user(
 
 def user_login(
     db: Session,
-    user_data: OAuth2PasswordRequestForm = Depends(),
+    user_data: UserLoginRequest,
 ) -> dict:
 
-    user = obtener_usuario_por_email(db, user_data.username)
+    user = obtener_usuario_por_email(db, user_data.email)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
