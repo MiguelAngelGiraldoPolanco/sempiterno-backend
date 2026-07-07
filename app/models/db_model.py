@@ -44,6 +44,7 @@ class Ticket(SQLModel, table=True):
     total: float
     iva: float = 0.0
     paid: bool = False
+    delivered: bool = Field(default=False)
 
     lead_id: Optional[int] = Field(default=None, foreign_key="lead.id")
     coupon_id: Optional[int] = Field(default=None, foreign_key="coupon.id")

@@ -34,6 +34,7 @@ class TicketRead(TicketBase):
     paid: bool
     model_config = ConfigDict(from_attributes=True)
     total: float
+    delivered: bool
 
 
 class TicketUpdate(BaseModel):
@@ -41,6 +42,7 @@ class TicketUpdate(BaseModel):
     iva: float | None = None
     paid: bool | None = None
     model_config = ConfigDict(from_attributes=True)
+    delivered: bool | None = None
 
 
 class ReporteMensual(BaseModel):

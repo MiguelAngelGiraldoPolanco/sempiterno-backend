@@ -118,6 +118,9 @@ def actualizar_ticket(
     if "paid" in datos_nuevos:
         ticket_db.paid = datos_nuevos["paid"]
 
+    if "delivered" in datos_nuevos:
+        ticket_db.delivered = datos_nuevos["delivered"]
+
     ticket_db.update_at = datetime.now(timezone.utc)
 
     db.add(ticket_db)
