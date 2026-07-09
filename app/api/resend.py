@@ -13,7 +13,7 @@ def email_verify(email_destino: str, lead_name: str, token: str):
         "html": f"""
             <h1>¡Hola! {lead_name}</h1>
             <p>Para recibir tu cupón del 10%, por favor confirma que este es tu correo:</p>
-            <a href="http://localhost:8000/api/v1/email_verify/verify?token={token}" 
+            <a href="{settings.URL_BACKEND}/api/v1/email_verify/verify?token={token}"
                style="background: #000; color: #fff; padding: 10px 20px;">
                Confirmar y Ver Cupón
             </a>
