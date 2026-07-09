@@ -9,7 +9,6 @@ Create Date: 2026-07-07 12:14:31.707671
 from typing import Sequence, Union
 
 import sqlalchemy as sa
-
 from alembic import op
 
 # revision identifiers, used by Alembic.
@@ -24,7 +23,7 @@ def upgrade() -> None:
     with op.batch_alter_table("user", schema=None) as batch_op:
         batch_op.add_column(
             sa.Column(
-                "is_active", sa.Boolean(), nullable=False, server_default=sa.text("1")
+                "is_active", sa.Boolean(), nullable=False, server_default=sa.true()
             )
         )
 

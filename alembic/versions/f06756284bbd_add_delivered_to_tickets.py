@@ -9,7 +9,6 @@ Create Date: 2026-07-07 12:41:55.312204
 from typing import Sequence, Union
 
 import sqlalchemy as sa
-
 from alembic import op
 
 # revision identifiers, used by Alembic.
@@ -24,7 +23,7 @@ def upgrade() -> None:
     with op.batch_alter_table("ticket", schema=None) as batch_op:
         batch_op.add_column(
             sa.Column(
-                "delivered", sa.Boolean(), nullable=False, server_default=sa.text("0")
+                "delivered", sa.Boolean(), nullable=False, server_default=sa.false()
             )
         )
 
