@@ -2,14 +2,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence
 
+from app.core.config import settings
+from app.models.db_model import Ticket
+from app.schemas.ticket import ProductoItem, TicketCreate, TicketUpdate
 from fastapi import HTTPException, status
 from jinja2 import Environment, FileSystemLoader
 from sqlmodel import Session, select
 from weasyprint import HTML
-
-from app.core.config import settings
-from app.models.db_model import Ticket
-from app.schemas.ticket import ProductoItem, TicketCreate, TicketUpdate
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 templates = Environment(loader=FileSystemLoader("app/templates"))
@@ -121,6 +120,9 @@ def actualizar_ticket(
     if "delivered" in datos_nuevos:
         ticket_db.delivered = datos_nuevos["delivered"]
 
+    if "first_payment" in datos_nuevos:
+        ticket_db.first_payment = datos_nuevos["first_payment"]
+
     ticket_db.update_at = datetime.now(timezone.utc)
 
     db.add(ticket_db)
@@ -176,7 +178,8 @@ def generar_factura_pdf(ticket) -> bytes:
         fecha=ticket.create_at.strftime("%d/%m/%Y"),
         productos=ticket.products,
         total=ticket.total,
-        abono=ticket.total * 0.5,
+        abono=ticket.first_payment,
+        saldo=ticket.total - ticket.first_payment,
         pagado=ticket.paid,
         nequi=settings.NEQUI,
         daviplata=settings.DAVIPLATA,

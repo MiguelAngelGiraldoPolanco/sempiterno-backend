@@ -89,6 +89,13 @@
       margin-top: 10px;
     }
 
+    .totales .saldo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #b3261e;
+      margin-top: 6px;
+    }
+
     .footer {
       background: #e3d0dd;
       padding: 18px 22px;
@@ -155,6 +162,7 @@
   <div class="totales">
     <p class="total-row">TOTAL: ${{ "{:,.0f}".format(total).replace(",", ".") }}</p>
     <p class="abono">ABONO: ${{ "{:,.0f}".format(abono).replace(",", ".") }}</p>
+    <p class="saldo">SALDO PENDIENTE: ${{ "{:,.0f}".format(saldo).replace(",", ".") }}</p>
     <p>Estado:
       {% if pagado %}<span class="badge-pagado">PAGADO</span>
       {% else %}<span class="badge-pendiente">PENDIENTE</span>{% endif %}

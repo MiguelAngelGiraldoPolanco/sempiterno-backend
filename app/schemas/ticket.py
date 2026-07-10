@@ -17,6 +17,7 @@ class TicketBase(BaseModel):
     customerName: str
     products: List[ProductoItem]
     iva: float = 0.0
+    first_payment: float = 0.0
 
 
 # 3. Esquema para CREAR (Lo que el cliente envía)
@@ -43,6 +44,7 @@ class TicketUpdate(BaseModel):
     paid: bool | None = None
     model_config = ConfigDict(from_attributes=True)
     delivered: bool | None = None
+    first_payment: float | None = None
 
 
 class ReporteMensual(BaseModel):
