@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     NIT: str | None = None
     DIRECTION: str | None = None
     RESPONSIBLE: str | None = None
-    URL_BACKEND: str
+    URL_BACKEND: str | None = None
     DATABASE_URL_TEST: str | None = None
 
     # 2. Configuración para leer el archivo .env
