@@ -33,5 +33,6 @@ COPY . .
 
 EXPOSE 8000
 
-# 5. Comando para arrancar el servidor
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
+# 5. Comando de PRODUCCIÓN: sin --reload, y escuchando en el puerto que asigne el host ($PORT).
+#    En local, docker-compose sobreescribe este comando para reactivar --reload.
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
