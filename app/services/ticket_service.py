@@ -1,14 +1,15 @@
-from datetime import datetime, timezone
+from collections.abc import Sequence
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Sequence
 
-from app.core.config import settings
-from app.models.db_model import Ticket
-from app.schemas.ticket import ProductoItem, TicketCreate, TicketUpdate
 from fastapi import HTTPException, status
 from jinja2 import Environment, FileSystemLoader
 from sqlmodel import Session, select
 from weasyprint import HTML
+
+from app.core.config import settings
+from app.models.db_model import Ticket
+from app.schemas.ticket import ProductoItem, TicketCreate, TicketUpdate
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 templates = Environment(loader=FileSystemLoader("app/templates"))
@@ -109,6 +110,10 @@ def actualizar_ticket(
     if "iva" in datos_nuevos:
         ticket_db.iva = datos_nuevos["iva"]
 
+    # Incluimos la fecha de venta modificada si viene en la request
+    if "sale_date" in datos_nuevos:
+        ticket_db.sale_date = datos_nuevos["sale_date"]
+
     if "products" in datos_nuevos:
         ticket_db.products = datos_nuevos["products"]
 
@@ -123,7 +128,7 @@ def actualizar_ticket(
     if "first_payment" in datos_nuevos:
         ticket_db.first_payment = datos_nuevos["first_payment"]
 
-    ticket_db.update_at = datetime.now(timezone.utc)
+    ticket_db.update_at = datetime.now(UTC)
 
     db.add(ticket_db)
     try:
@@ -158,8 +163,8 @@ def asegurar_utc(
     dt: datetime,
 ) -> datetime:
     if dt.tzinfo is None:
-        return dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc)
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
 
 
 def calcular_total_con_iva(
