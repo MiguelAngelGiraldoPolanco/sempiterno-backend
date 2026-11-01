@@ -180,7 +180,9 @@ def generar_factura_pdf(ticket) -> bytes:
     html = template.render(
         numero=ticket.id,
         cliente=ticket.customerName,
-        fecha=ticket.create_at.strftime("%d/%m/%Y"),
+        # Actualizamos la factura con fecha de venta no con fecha de creacion
+        # fecha=ticket.create_at.strftime("%d/%m/%Y"),
+        fecha=ticket.sale_date.strftime("%d/%m/%Y"),
         productos=ticket.products,
         total=ticket.total,
         abono=ticket.first_payment,
