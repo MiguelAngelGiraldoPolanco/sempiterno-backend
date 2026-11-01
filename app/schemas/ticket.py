@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from pydantic import BaseModel, ConfigDict
 
@@ -15,9 +14,10 @@ class ProductoItem(BaseModel):
 # tiket base hereda de base model que seria la clase padre
 class TicketBase(BaseModel):
     customerName: str
-    products: List[ProductoItem]
+    products: list[ProductoItem]
     iva: float = 0.0
     first_payment: float = 0.0
+    sale_date: datetime
 
 
 # 3. Esquema para CREAR (Lo que el cliente envía)
@@ -40,8 +40,8 @@ class TicketRead(TicketBase):
 
 class TicketUpdate(BaseModel):
     # Actualizacion de ticket para poder editar el nombre del cliente y la fecha de entrega del ticket
-    customerName: str | None = None 
-    products: List[ProductoItem] | None = None
+    customerName: str | None = None
+    products: list[ProductoItem] | None = None
     sale_date: datetime | None = None
     iva: float | None = None
     paid: bool | None = None
@@ -53,4 +53,4 @@ class TicketUpdate(BaseModel):
 class ReporteMensual(BaseModel):
     total_ventas: float
     cantidad_tickets: int
-    tickets: List[TicketRead]
+    tickets: list[TicketRead]
