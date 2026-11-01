@@ -39,7 +39,10 @@ class TicketRead(TicketBase):
 
 
 class TicketUpdate(BaseModel):
+    # Actualizacion de ticket para poder editar el nombre del cliente y la fecha de entrega del ticket
+    customerName: str | None = None 
     products: List[ProductoItem] | None = None
+    sale_date: datetime | None = None
     iva: float | None = None
     paid: bool | None = None
     model_config = ConfigDict(from_attributes=True)
