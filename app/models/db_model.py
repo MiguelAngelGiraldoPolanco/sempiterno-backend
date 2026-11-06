@@ -39,6 +39,10 @@ class Ticket(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     customerName: str = Field(index=True)
     products: List[Any] = Field(default=[], sa_column=Column(JSON))
+    # sale_date añade una fecha editable para que se puedan poner fechas de venta pasadas,
+    # por ejemplo si se hace una venta en efectivo y se quiere poner la fecha de venta real
+    sale_date: datetime 
+    
     create_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     update_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     total: float

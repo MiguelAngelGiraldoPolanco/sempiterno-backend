@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     RESPONSIBLE: str | None = None
     URL_BACKEND: str | None = None
     DATABASE_URL_TEST: str | None = None
+    DATABASE_URL_PRODUCTION: str | None = None
 
     # 2. Configuración para leer el archivo .env
     # 'extra="ignore"' evita que la app truene si hay más variables en el .env
