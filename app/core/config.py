@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     # 1. Definimos las variables que pusiste en el .env
     # Pydantic validará que existan y sean del tipo correcto
     DATABASE_URL: str
+    POSTGRESQL_TEST: str
     SECRET_KEY: str
     PROJECT_NAME: str = "My App"
     ALGORITHM: str = "HS256"

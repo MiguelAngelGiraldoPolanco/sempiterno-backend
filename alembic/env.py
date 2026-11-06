@@ -1,9 +1,7 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -15,15 +13,14 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # --- Configuración del proyecto ---
-from sqlmodel import SQLModel
-
 from app.core.config import settings
 
 # Importar los modelos REGISTRA sus tablas en SQLModel.metadata (necesario para autogenerate)
 from app.models import db_model, user  # noqa: F401
+from sqlmodel import SQLModel
 
 # Inyectamos la URL real de la BD desde nuestros settings (no se hardcodea en alembic.ini)
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL_TEST)
 
 # Alembic compara ESTE metadata contra la BD para detectar los cambios de esquema
 target_metadata = SQLModel.metadata

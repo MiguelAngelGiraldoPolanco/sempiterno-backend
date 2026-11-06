@@ -36,6 +36,7 @@ class TicketRead(TicketBase):
     model_config = ConfigDict(from_attributes=True)
     total: float
     delivered: bool
+    sale_date: datetime
 
 
 class TicketUpdate(BaseModel):
