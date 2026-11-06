@@ -20,7 +20,7 @@ from app.models import db_model, user  # noqa: F401
 from sqlmodel import SQLModel
 
 # Inyectamos la URL real de la BD desde nuestros settings (no se hardcodea en alembic.ini)
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL_TEST)
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 # Alembic compara ESTE metadata contra la BD para detectar los cambios de esquema
 target_metadata = SQLModel.metadata
